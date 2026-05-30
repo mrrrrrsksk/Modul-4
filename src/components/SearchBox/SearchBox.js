@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import './SearchBox.css';
-import store from '../../redux/store';
 
 class SearchBox extends Component {
     state = {
@@ -13,18 +13,16 @@ class SearchBox extends Component {
 
     searchBoxSubmitHandler = (e) => {
         e.preventDefault();
-        const apiKey = 'c8945d44';
-        fetch(`https://www.omdbapi.com/?s=${this.state.searchLine}&apikey=${apiKey}`)
+        fetch(`https://www.omdbapi.com/?s=${this.state.searchLine}&apikey=c8945d44`)
             .then(res => res.json())
             .then(data => {
                 if (data.Search) {
-                    store.dispatch({
-                        type: 'SET_MOVIES',
-                        payload: data.Search
-                    });
+                    this.props.setMovies(data.Search);
+                } else {
+                    alert("Film tapılmadı!");
                 }
             })
-            .catch(err => console.log(err));
+            .catch(err => console.error(err));
     }
 
     render() {
@@ -55,4 +53,8 @@ class SearchBox extends Component {
     }
 }
 
-export default SearchBox;
+const mapDispatchToProps = (dispatch) => ({
+    setMovies: (movies) => dispatch({ type: 'SET_MOVIES', payload: movies })
+});
+
+export default connect(null, mapDispatchToProps)(SearchBox);
